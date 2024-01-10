@@ -1,10 +1,10 @@
 import React from 'react';
 import {StyleSheet, TextInput} from 'react-native';
 
-const MTextInput = ({onChangeText}) => {
+const MTextInput = ({onChangeText, placeholder}) => {
   return (
       <TextInput
-        placeholder="Google sheets url"
+        placeholder={placeholder}
         style={styles.input}  
         onChangeText={onChangeText}
       />

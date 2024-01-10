@@ -4,8 +4,9 @@ import colors from '../constants/colors';
 
 const MButton = ({ type, text, onPress, disabled }) => {
   const buttonStyle = [
-    styles.button,
+    styles.baseButton,
     type === 'primary' && styles.primaryButton,
+    type === 'secondary' && styles.secondaryButton,
     disabled && styles.buttonDisabled
   ];
 
@@ -25,10 +26,14 @@ const MButton = ({ type, text, onPress, disabled }) => {
   );
 };
 
+MButton.defaultProps = {
+  type: 'primary',
+  disabled: false,
+};
+
 const styles = StyleSheet.create({
-  button: {
+  baseButton: {
     height: 50,
-    width: "100%",
     margin: 12,
     padding: 10,
     borderRadius: 32,
@@ -37,6 +42,11 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     backgroundColor: colors.primary,
+    width: "100%",
+  },
+  secondaryButton: {
+    backgroundColor: colors.secondary,
+    width: 50
   },
   buttonDisabled: {
     backgroundColor: colors['gray-1'],

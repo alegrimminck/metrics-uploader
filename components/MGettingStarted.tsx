@@ -4,9 +4,8 @@ import MTextInput from './MTextInput';
 import colors from '../constants/colors';
 import MButton from './MButton';
 
-const GettingStarted = () => {
+const GettingStarted = ({onSave}) => {
   const [inputValue, setInputValue] = useState('');
-  const [saveValue, setSaveValue] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   const handleInputChange = (text) => {
@@ -15,7 +14,7 @@ const GettingStarted = () => {
   };
 
   const handleButtonPress = () => {
-    setSaveValue(inputValue)
+    onSave(inputValue)
   };
 
   return (
@@ -23,7 +22,7 @@ const GettingStarted = () => {
       <Text style={styles.title}>Metrics Uploader</Text>
       <Text style={styles.subtitle}>Getting started</Text>
       <Text style={styles.description}>To start you must add the google sheet url of your metrics.</Text>
-      <MTextInput onChangeText={handleInputChange}/>
+      <MTextInput onChangeText={handleInputChange} placeholder="Google sheet url"/>
       <MButton type="primary" text="Save" onPress={handleButtonPress} disabled={isButtonDisabled}/>
     </View>
   );

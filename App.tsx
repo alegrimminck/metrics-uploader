@@ -1,12 +1,22 @@
 import { StatusBar, StyleSheet,  View } from 'react-native';
-import GettingStarted from './components/MGettingStarted';
+import MGettingStarted from './components/MGettingStarted';
+import { useState } from 'react';
+import MMainPage from './components/MMainPage';
 
 export default function App() {
-  console.log( StatusBar.currentHeight);
+  const [savedValue, setSavedValue] = useState('');
+  const onSave = (savedValue) => {
+    setSavedValue(savedValue);
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar />
-      <GettingStarted></GettingStarted>
+      {savedValue == "" ? (
+        <MGettingStarted onSave={onSave} />
+        ) : (
+          <MMainPage googleSheetUrl={savedValue} onSave={onSave}/>
+      )}
     </View>
   );
 }

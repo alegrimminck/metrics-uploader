@@ -1,23 +1,33 @@
 import { StatusBar, StyleSheet,  View } from 'react-native';
 import MGettingStarted from './components/MGettingStarted';
-import { useState } from 'react';
 import MMainPage from './components/MMainPage';
+import { useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+const Stack = createNativeStackNavigator();
+
 
 export default function App() {
   const [savedValue, setSavedValue] = useState('');
-  const onSave = (savedValue) => {
+  const handleOnSaveUrl = (savedValue) => {
     setSavedValue(savedValue);
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar />
-      {savedValue == "" ? (
-        <MGettingStarted onSave={onSave} />
-        ) : (
-          <MMainPage googleSheetUrl={savedValue} onSave={onSave}/>
-      )}
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="MGettingStarted"
+          component={MGettingStarted}
+        />
+        <Stack.Screen
+          name="MMainPage"
+          component={MMainPage}
+          initialParams={ {savedValue} }
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 

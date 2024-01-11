@@ -4,7 +4,7 @@ import MTextInput from './MTextInput';
 import colors from '../constants/colors';
 import MButton from './MButton';
 
-const GettingStarted = ({onSave}) => {
+const GettingStarted = ({navigation}) => {
   const [inputValue, setInputValue] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
@@ -14,7 +14,7 @@ const GettingStarted = ({onSave}) => {
   };
 
   const handleButtonPress = () => {
-    onSave(inputValue)
+    return navigation.navigate('MMainPage', { item: inputValue })
   };
 
   return (

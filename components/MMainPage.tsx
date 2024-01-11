@@ -5,15 +5,16 @@ import colors from '../constants/colors';
 import MButton from './MButton';
 import moment from 'moment';
 
-const MMainPage = ({googleSheetUrl, onSave}) => {
+const MMainPage = ({navigation,route}) => {
   const [inputValue, setInputValue] = useState('');
   const [savedValue, setSavedValue] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [today, setToday] = useState(moment());
   const [savedToday, setSavedToday] = useState(moment());
 
-  const handleRedoGoogleSheetUrl = () => {
-    onSave('')
+
+  const handleGoBack = () => {
+    return navigation.navigate('MGettingStarted', { item: inputValue })
   }
 
   const handleInputChange = (text) => {
@@ -42,7 +43,7 @@ const MMainPage = ({googleSheetUrl, onSave}) => {
 
   return (
     <View style={styles.container}>
-      <MButton type="secondary" text="<-" onPress={() => handleRedoGoogleSheetUrl()}/>
+      <MButton type="secondary" text="<-" onPress={handleGoBack}/>
       <Text style={styles.title}>Metrics Uploader</Text>
       <Text style={styles.subtitle}>Save your values</Text>
 
@@ -60,7 +61,7 @@ const MMainPage = ({googleSheetUrl, onSave}) => {
       <MButton type="primary" text="Save" onPress={handleSaveValuesPress} disabled={isButtonDisabled}/>
 
       <View style={styles.information}>
-        <Text style={styles.description}>Google sheet url: {googleSheetUrl}</Text>
+        <Text style={styles.description}>Google sheet url: {route.params.item}</Text>
         <Text style={styles.description}>Last sent value: {savedValue} on {savedToday.format("DD/MM/YYYY")}</Text>
       </View>
     </View>

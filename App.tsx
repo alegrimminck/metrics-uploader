@@ -18,13 +18,13 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
       <Stack.Screen
+        name="MMainPage"
+        component={MMainPage}
+        initialParams={ {savedValue} }
+      />
+      <Stack.Screen
           name="MLogin"
           component={MLogin}
-        />
-        <Stack.Screen
-          name="MMainPage"
-          component={MMainPage}
-          initialParams={ {savedValue} }
         />
       </Stack.Navigator>
     </NavigationContainer>

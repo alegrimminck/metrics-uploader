@@ -1,9 +1,9 @@
 import { StatusBar, StyleSheet,  View } from 'react-native';
-import MGettingStarted from './components/MGettingStarted';
 import MMainPage from './components/MMainPage';
 import { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import MLogin from './components/MLogin';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,14 +17,14 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
-          name="MGettingStarted"
-          component={MGettingStarted}
-        />
-        <Stack.Screen
-          name="MMainPage"
-          component={MMainPage}
-          initialParams={ {savedValue} }
+      <Stack.Screen
+        name="MMainPage"
+        component={MMainPage}
+        initialParams={ {savedValue} }
+      />
+      <Stack.Screen
+          name="MLogin"
+          component={MLogin}
         />
       </Stack.Navigator>
     </NavigationContainer>

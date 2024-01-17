@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Button } from 'react-native';
 import MTextInput from './MTextInput';
 import colors from '../constants/colors';
 import MButton from './MButton';
 import moment from 'moment';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { postGoogleSheets } from '../logic/requests/postGoogleSheets';
 
-const MMainPage = ({navigation,route}) => {
+const MMainPage = ({navigation}) => {
+  // Main logic
   const [inputValue, setInputValue] = useState('');
-  const [savedValue, setSavedValue] = useState('');
+  const [username, setUsername] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  const [today, setToday] = useState(moment());
   const [savedToday, setSavedToday] = useState(moment());
+  // Dev variables
+  const [today, setToday] = useState(moment());
 
-
-  const handleGoBack = () => {
-    return navigation.navigate('MGettingStarted', { item: inputValue })
+  const handleLogout = () => {
+    AsyncStorage.removeItem("@user")
+    navigation.navigate('MLogin')
   }
 
   const handleInputChange = (text) => {
@@ -22,13 +26,27 @@ const MMainPage = ({navigation,route}) => {
     setIsButtonDisabled(text.length === 0);
   };
 
-  const handleSaveValuesPress = () => {
-    setSavedValue(inputValue);
+  const handleSaveValuesPress = async () => {
     setSavedToday(today);
     setInputValue('');
     setIsButtonDisabled(true);
-  };
+    await postGoogleSheets(today, inputValue)
+  }
 
+  useEffect(() => {
+    async function getUsername() {
+      const user = await AsyncStorage.getItem('@user');
+      if (user) {
+        setUsername(JSON.parse(user).name);
+      } else {
+        navigation.navigate('MLogin');
+      }
+    }
+    getUsername();
+  }
+  , []);
+
+  // dev functions
   const handleMinusOneDay = () => {
     const yesterday = moment(today).subtract(1, 'days')
     setToday(yesterday)
@@ -38,31 +56,31 @@ const MMainPage = ({navigation,route}) => {
     const tomorrow = moment(today).add(1, 'days')
     setToday(tomorrow)
   }
-  
 
 
   return (
     <View style={styles.container}>
-      <MButton type="secondary" text="<-" onPress={handleGoBack}/>
+      <MButton type="primary" text="Logout" onPress={handleLogout}/>
       <Text style={styles.title}>Metrics Uploader</Text>
+      <Text style={styles.description}>Hi {username}!</Text>
       <Text style={styles.subtitle}>Save your values</Text>
 
       <View style={styles.todaySection}>
         <Text style={styles.description}>Today is: {today.format("DD/MM/YYYY")}</Text>
-        <View style={styles.buttonRow}>
-          <Button title="-1 day" onPress={() => handleMinusOneDay()} />
-          <View style={styles.spacer}></View>
-          <Button title="+1 day" onPress={() => handlePlusOneDay()} />
-        </View>
       </View>
-      
-      
-      <MTextInput onChangeText={handleInputChange} placeholder="value to upload"/>
-      <MButton type="primary" text="Save" onPress={handleSaveValuesPress} disabled={isButtonDisabled}/>
 
-      <View style={styles.information}>
-        <Text style={styles.description}>Google sheet url: {route.params.item}</Text>
-        <Text style={styles.description}>Last sent value: {savedValue} on {savedToday.format("DD/MM/YYYY")}</Text>
+      <MTextInput onChangeText={handleInputChange} placeholder="value to upload"/>
+      <MButton type="primary" text="Send" onPress={handleSaveValuesPress} disabled={isButtonDisabled}/>
+
+      <View style={styles.developmentWrapper}>
+        <View style={styles.buttonRow}>
+            <Button title="-1 day" onPress={() => handleMinusOneDay()} />
+            <View style={styles.spacer}></View>
+            <Button title="+1 day" onPress={() => handlePlusOneDay()} />
+          </View>
+        <View style={styles.information}>
+          <Text style={styles.description}>Last sent value: {inputValue} on {savedToday.format("DD/MM/YYYY")}</Text>
+        </View>
       </View>
     </View>
   );
@@ -112,6 +130,11 @@ const styles = StyleSheet.create({
   information: {
     flex: 1,
     justifyContent: 'flex-end',
+    width: '100%',
+  },
+  developmentWrapper: {
+    flex: 1,
+
     width: '100%',
   }
 });

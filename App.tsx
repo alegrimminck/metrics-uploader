@@ -1,5 +1,4 @@
 import { StatusBar, StyleSheet,  View } from 'react-native';
-import MGettingStarted from './components/MGettingStarted';
 import MMainPage from './components/MMainPage';
 import { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
@@ -21,10 +20,6 @@ export default function App() {
       <Stack.Screen
           name="MLogin"
           component={MLogin}
-        />
-        <Stack.Screen
-          name="MGettingStarted"
-          component={MGettingStarted}
         />
         <Stack.Screen
           name="MMainPage"

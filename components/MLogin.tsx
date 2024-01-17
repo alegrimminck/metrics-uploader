@@ -6,18 +6,16 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { postGoogleSheets } from '../logic/requests/post_google_sheets';
+import { postGoogleSheets } from '../logic/requests/postGoogleSheets';
 
 WebBrowser.maybeCompleteAuthSession();
 
 const ANDROID_CLIENT_ID = "430190611129-ri6cfjsakts45imckl2cpa41elof0k1k.apps.googleusercontent.com"
-const WEB_CLIENT_ID = "430190611129-8k04fmhi02s20ecbs8a8cqrug200c68k.apps.googleusercontent.com"
 
 const MLogin = ({navigation}) => {
   const [userInfo, setUserInfo] = useState(null);
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId: ANDROID_CLIENT_ID,
-    webClientId: WEB_CLIENT_ID,
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
 
@@ -45,14 +43,18 @@ const MLogin = ({navigation}) => {
       });
       const user = await response.json()
       await AsyncStorage.setItem('@user', JSON.stringify(user));
+      navigateToMainPage();
     } catch (error) {
-      // Add error handler
+      console.log(error)
     }
+  }
+
+  const navigateToMainPage = () => {
+    navigation.navigate('MMainPage');
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.description}>{JSON.stringify(userInfo, null, 2)}</Text>
       <Text style={styles.title}>Metrics Uploader</Text>
       <MButton type="primary" text="Sign in with Google" onPress={() => promptAsync()} />
       <MButton type="primary" text="Append to google sheets" onPress={postGoogleSheets} />

@@ -4,6 +4,7 @@ import MMainPage from './components/MMainPage';
 import { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import MLogin from './components/MLogin';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,10 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+      <Stack.Screen
+          name="MLogin"
+          component={MLogin}
+        />
         <Stack.Screen
           name="MGettingStarted"
           component={MGettingStarted}

@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-export const postGoogleSheets = async () => {
+export const postGoogleSheets = async (momentDate, value) => {
     const accessToken = await AsyncStorage.getItem('accessToken');
     console.log(`accessToken: ${accessToken}`)
     if (!accessToken) {
@@ -9,25 +9,15 @@ export const postGoogleSheets = async () => {
       return;
     }
 
-    const sheetId = '12P5-URZO0SfO5-ebVALqgCohdaEhcjWeFkDgAzJmNwY';
-    const range = 'DATOS!A:A';
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}:append?valueInputOption=RAW`;
-
-    const body = {
-      majorDimension: "ROWS",
-      values: [
-        ["2023-12-12", "Valor desde Android!!!"]
-      ]
-    };
-
-    let data = {"majorDimension": "ROWS",  "values": [["2023-03-01","Lo logre de ANDROOIDDD"]]};
+    const formattedDate = momentDate.format('YYYY-MM-DD');
+    let data = {"majorDimension": "ROWS",  "values": [[formattedDate, value]]};
 
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
       url: 'https://sheets.googleapis.com/v4/spreadsheets/12P5-URZO0SfO5-ebVALqgCohdaEhcjWeFkDgAzJmNwY/values/DATOS!A:A:append?valueInputOption=RAW',
       headers: {
-        'Content-Type': 'application/json', 
+        'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + accessToken
       },
       data : JSON.stringify(data)

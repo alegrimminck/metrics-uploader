@@ -24,7 +24,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.anonymous.metricsuploader",
-      "versionCode": "0.1"
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"

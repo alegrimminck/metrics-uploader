@@ -46,6 +46,7 @@ const MMainPage = ({navigation}) => {
   }
   , []);
 
+
   // dev functions
   const handleMinusOneDay = () => {
     const yesterday = moment(today).subtract(1, 'days')
@@ -62,7 +63,7 @@ const MMainPage = ({navigation}) => {
     <View style={styles.container}>
       <MButton type="primary" text="Logout" onPress={handleLogout}/>
       <Text style={styles.title}>Metrics Uploader</Text>
-      <Text style={styles.description}>Hi {username}!</Text>
+      {username && <Text style={styles.description}>Hi {username}!</Text>}
       <Text style={styles.subtitle}>Save your values</Text>
 
       <View style={styles.todaySection}>

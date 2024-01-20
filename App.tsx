@@ -10,13 +10,13 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [savedValue, setSavedValue] = useState('');
-  const handleOnSaveUrl = (savedValue) => {
-    setSavedValue(savedValue);
-  };
-
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false
+        }}
+      >
       <Stack.Screen
         name="MMainPage"
         component={MMainPage}

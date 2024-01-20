@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Button } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Button } from 'react-native';
 import MTextInput from './MTextInput';
 import colors from '../constants/colors';
 import MButton from './MButton';
 import moment from 'moment';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { postGoogleSheets } from '../logic/requests/postGoogleSheets';
+import { AuthContext } from '../logic/authentication/authContext';
+import { getUserName } from '../logic/authentication/getUserInfo';
 
 const MMainPage = ({navigation}) => {
   // Main logic
@@ -16,10 +17,7 @@ const MMainPage = ({navigation}) => {
   // Dev variables
   const [today, setToday] = useState(moment());
 
-  const handleLogout = () => {
-    AsyncStorage.removeItem("@user")
-    navigation.navigate('MLogin')
-  }
+  const { userToken: accessToken } = useContext(AuthContext);
 
   const handleInputChange = (text) => {
     setInputValue(text);
@@ -30,21 +28,21 @@ const MMainPage = ({navigation}) => {
     setSavedToday(today);
     setInputValue('');
     setIsButtonDisabled(true);
-    await postGoogleSheets(today, inputValue)
+    await postGoogleSheets(today, inputValue, accessToken)
   }
+
+  const { userToken } = useContext(AuthContext);
 
   useEffect(() => {
     async function getUsername() {
-      const user = await AsyncStorage.getItem('@user');
-      if (user) {
-        setUsername(JSON.parse(user).name);
-      } else {
-        navigation.navigate('MLogin');
-      }
+      const username = await getUserName(userToken)
+      setUsername(username);
     }
     getUsername();
   }
   , []);
+
+  const { signOut } = useContext(AuthContext);
 
 
   // dev functions
@@ -61,7 +59,7 @@ const MMainPage = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <MButton type="primary" text="Logout" onPress={handleLogout}/>
+      <MButton type="primary" text="Logout" onPress={() => signOut()}/>
       <Text style={styles.title}>Metrics Uploader</Text>
       {username && <Text style={styles.description}>Hi {username}!</Text>}
       <Text style={styles.subtitle}>Save your values</Text>

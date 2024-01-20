@@ -1,9 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-export const postGoogleSheets = async (momentDate, value) => {
-    const accessToken = await AsyncStorage.getItem('accessToken');
-    console.log(`accessToken: ${accessToken}`)
+export const postGoogleSheets = async (momentDate, value, accessToken) => {
     if (!accessToken) {
       console.error("No access token found");
       return;

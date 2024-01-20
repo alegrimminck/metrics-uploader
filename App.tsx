@@ -1,33 +1,76 @@
-import { StatusBar, StyleSheet,  View } from 'react-native';
+import { ActivityIndicator, StyleSheet,  View } from 'react-native';
 import MMainPage from './components/MMainPage';
-import { useState } from 'react';
+import { useEffect, useMemo, useReducer, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MLogin from './components/MLogin';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from './logic/authentication/authContext';
+import * as Google from 'expo-auth-session/providers/google';
+import { reducer } from './logic/globalState/reducer';
+import { useAuthContext } from './logic/custom_hooks/useAuth';
+import { useRestoreUserIfSavedToken } from './logic/hooks/useRestoreUserIfSavedToken';
+import { useHandleGoogleSignInResponse } from './logic/hooks/useHandleGoogleSignInResponse';
 
 const Stack = createNativeStackNavigator();
 
+const ANDROID_CLIENT_ID = "430190611129-ri6cfjsakts45imckl2cpa41elof0k1k.apps.googleusercontent.com"
 
 export default function App() {
-  const [savedValue, setSavedValue] = useState('');
+  const [state, dispatch] = useReducer(
+    reducer,
+    {
+      isLoading: true,
+      isSignout: false,
+      userToken: null,
+    }
+  );
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId: ANDROID_CLIENT_ID,
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  });
+
+  const authContext = useAuthContext(state, dispatch, promptAsync);
+  useHandleGoogleSignInResponse(dispatch, response);
+  useRestoreUserIfSavedToken(dispatch, state)
+
+  if (state.isLoading) {
+    return (
+      <View>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-      <Stack.Screen
-        name="MMainPage"
-        component={MMainPage}
-        initialParams={ {savedValue} }
-      />
-      <Stack.Screen
-          name="MLogin"
-          component={MLogin}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthContext.Provider value={authContext}>
+      <NavigationContainer>
+        {!state.userToken ? (
+          <Stack.Navigator
+          screenOptions={{
+            headerShown: false
+          }}
+          >
+          <Stack.Screen
+            name="MLogin"
+            component={MLogin}
+          />
+        </Stack.Navigator>
+        ): (
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false
+            }}
+          >
+          <Stack.Screen
+            name="MMainPage"
+            component={MMainPage}
+          />
+          </Stack.Navigator>
+        )}
+      </NavigationContainer>
+    </AuthContext.Provider>
   );
 }
 

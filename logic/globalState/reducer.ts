@@ -19,5 +19,10 @@ export function reducer(prevState, action) {
         isSignout: true,
         userToken: null,
       };
+    case "UPDATE_TODAY":
+      return {
+        ...prevState,
+        today: action.today,
+      };
   }
 }

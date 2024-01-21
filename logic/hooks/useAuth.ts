@@ -10,9 +10,13 @@ export function useAuthContext(state, dispatch, promptAsync) {
       signOut: async () => {
         await signOutLogic(dispatch);
       },
+      updateToday: (today) => {
+        dispatch({ type: "UPDATE_TODAY", today: today });
+      },
       userToken: state.userToken,
+      today: state.today,
     }),
-    [state.userToken, dispatch, promptAsync]
+    [state.userToken, state.today, dispatch, promptAsync]
   );
 }
 

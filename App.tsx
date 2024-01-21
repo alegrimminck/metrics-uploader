@@ -8,9 +8,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "./logic/authentication/authContext";
 import * as Google from "expo-auth-session/providers/google";
 import { reducer } from "./logic/globalState/reducer";
-import { useAuthContext } from "./logic/custom_hooks/useAuth";
+import { useAuthContext } from "./logic/hooks/useAuth";
 import { useRestoreUserIfSavedToken } from "./logic/hooks/useRestoreUserIfSavedToken";
 import { useHandleGoogleSignInResponse } from "./logic/hooks/useHandleGoogleSignInResponse";
+import MDeveloperSettings from "./components/MDeveloperSettings";
+import { getToday } from "./logic/dates/dates";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +24,7 @@ export default function App() {
     isLoading: true,
     isSignout: false,
     userToken: null,
+    today: getToday(),
   });
 
   const [request, response, promptAsync] = Google.useAuthRequest({
@@ -59,6 +62,10 @@ export default function App() {
             }}
           >
             <Stack.Screen name="MMainPage" component={MMainPage} />
+            <Stack.Screen
+              name="MDeveloperSettings"
+              component={MDeveloperSettings}
+            />
           </Stack.Navigator>
         )}
       </NavigationContainer>

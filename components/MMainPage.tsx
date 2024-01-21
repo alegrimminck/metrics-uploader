@@ -3,21 +3,15 @@ import { View, Text, StyleSheet, Button } from "react-native";
 import MTextInput from "./MTextInput";
 import colors from "../constants/colors";
 import MButton from "./MButton";
-import moment from "moment";
 import { postGoogleSheets } from "../logic/requests/postGoogleSheets";
 import { AuthContext } from "../logic/authentication/authContext";
 import { getUserName } from "../logic/authentication/getUserInfo";
 
 const MMainPage = ({ navigation }) => {
-  // Main logic
   const [inputValue, setInputValue] = useState("");
   const [username, setUsername] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  const [savedToday, setSavedToday] = useState(moment());
-  // Dev variables
-  const [today, setToday] = useState(moment());
-
-  const { userToken: accessToken } = useContext(AuthContext);
+  const { userToken, today } = useContext(AuthContext);
 
   const handleInputChange = (text) => {
     setInputValue(text);
@@ -25,13 +19,10 @@ const MMainPage = ({ navigation }) => {
   };
 
   const handleSaveValuesPress = async () => {
-    setSavedToday(today);
     setInputValue("");
     setIsButtonDisabled(true);
-    await postGoogleSheets(today, inputValue, accessToken);
+    await postGoogleSheets(today, inputValue, userToken);
   };
-
-  const { userToken } = useContext(AuthContext);
 
   useEffect(() => {
     async function getUsername() {
@@ -43,15 +34,8 @@ const MMainPage = ({ navigation }) => {
 
   const { signOut } = useContext(AuthContext);
 
-  // dev functions
-  const handleMinusOneDay = () => {
-    const yesterday = moment(today).subtract(1, "days");
-    setToday(yesterday);
-  };
-
-  const handlePlusOneDay = () => {
-    const tomorrow = moment(today).add(1, "days");
-    setToday(tomorrow);
+  const handleDevMode = () => {
+    navigation.navigate("MDeveloperSettings");
   };
 
   return (
@@ -80,14 +64,7 @@ const MMainPage = ({ navigation }) => {
 
       <View style={styles.developmentWrapper}>
         <View style={styles.buttonRow}>
-          <Button title="-1 day" onPress={() => handleMinusOneDay()} />
-          <View style={styles.spacer}></View>
-          <Button title="+1 day" onPress={() => handlePlusOneDay()} />
-        </View>
-        <View style={styles.information}>
-          <Text style={styles.description}>
-            Last sent value: {inputValue} on {savedToday.format("DD/MM/YYYY")}
-          </Text>
+          <Button title="Dev mode" onPress={() => handleDevMode()} />
         </View>
       </View>
     </View>

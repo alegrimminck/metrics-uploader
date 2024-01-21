@@ -6,6 +6,8 @@ import MButton from "./MButton";
 import { postGoogleSheets } from "../logic/requests/postGoogleSheets";
 import { AuthContext } from "../logic/authentication/authContext";
 import { getUserName } from "../logic/authentication/getUserInfo";
+import { firstTimeOpenInitialization } from "../logic/first_initialization/firstTimeOpenInitialization";
+import { useFocusEffect } from "@react-navigation/native";
 
 const MMainPage = ({ navigation }) => {
   const [inputValue, setInputValue] = useState("");
@@ -24,13 +26,15 @@ const MMainPage = ({ navigation }) => {
     await postGoogleSheets(today, inputValue, userToken);
   };
 
-  useEffect(() => {
+  useFocusEffect(() => {
     async function getUsername() {
       const username = await getUserName(userToken);
       setUsername(username);
     }
     getUsername();
-  }, []);
+
+    firstTimeOpenInitialization();
+  });
 
   const { signOut } = useContext(AuthContext);
 

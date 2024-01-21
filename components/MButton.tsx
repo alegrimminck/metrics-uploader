@@ -1,33 +1,26 @@
-import React from 'react';
-import { Text, Pressable, StyleSheet } from 'react-native';
-import colors from '../constants/colors';
+import React from "react";
+import { Text, Pressable, StyleSheet } from "react-native";
+import colors from "../constants/colors";
 
 const MButton = ({ type, text, onPress, disabled }) => {
   const buttonStyle = [
     styles.baseButton,
-    type === 'primary' && styles.primaryButton,
-    type === 'secondary' && styles.secondaryButton,
-    disabled && styles.buttonDisabled
+    type === "primary" && styles.primaryButton,
+    type === "secondary" && styles.secondaryButton,
+    disabled && styles.buttonDisabled,
   ];
 
-  const textStyle = [
-    styles.text,
-    disabled && styles.textDisabled
-  ];
+  const textStyle = [styles.text, disabled && styles.textDisabled];
 
   return (
-    <Pressable
-      style={buttonStyle}
-      onPress={onPress}
-      disabled={disabled}
-    >
+    <Pressable style={buttonStyle} onPress={onPress} disabled={disabled}>
       <Text style={textStyle}>{text}</Text>
     </Pressable>
   );
 };
 
 MButton.defaultProps = {
-  type: 'primary',
+  type: "primary",
   disabled: false,
 };
 
@@ -37,8 +30,8 @@ const styles = StyleSheet.create({
     margin: 12,
     padding: 10,
     borderRadius: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   primaryButton: {
     backgroundColor: colors.primary,
@@ -46,19 +39,19 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     backgroundColor: colors.secondary,
-    width: 50
+    width: 50,
   },
   buttonDisabled: {
-    backgroundColor: colors['gray-1'],
+    backgroundColor: colors["gray-1"],
   },
   text: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   textDisabled: {
-    color: colors['gray-3'],
-  }
+    color: colors["gray-3"],
+  },
 });
 
 export default MButton;

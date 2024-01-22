@@ -1,8 +1,9 @@
 import { getToday } from "../dates/dates";
 
-export const todayDataTemplate = () => {
+export const todayDataTemplate = async () => {
+  const today = await getToday();
   return {
-    date: getToday(),
+    date: today,
     chatarra: null,
   };
 };

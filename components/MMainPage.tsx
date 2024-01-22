@@ -8,12 +8,16 @@ import { AuthContext } from "../logic/authentication/authContext";
 import { getUserName } from "../logic/authentication/getUserInfo";
 import { firstTimeOpenInitialization } from "../logic/first_initialization/firstTimeOpenInitialization";
 import { useFocusEffect } from "@react-navigation/native";
+import { hasPassedAtLeastOneDay } from "../logic/dates/dates";
+import { pushToFifoArray, pushUnhandledDays } from "../logic/utils/fifoArray";
+import { getData, setData, updateDataMetric } from "../logic/utils";
+import moment from "moment";
 
 const MMainPage = ({ navigation }) => {
   const [inputValue, setInputValue] = useState("");
   const [username, setUsername] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  const { userToken, today } = useContext(AuthContext);
+  const { userToken, signOut, today } = useContext(AuthContext);
 
   const handleInputChange = (text) => {
     setInputValue(text);
@@ -21,22 +25,38 @@ const MMainPage = ({ navigation }) => {
   };
 
   const handleSaveValuesPress = async () => {
+    // await postGoogleSheets(inputValue, userToken);
+    updateDataMetric(inputValue);
     setInputValue("");
     setIsButtonDisabled(true);
-    await postGoogleSheets(today, inputValue, userToken);
   };
 
-  useFocusEffect(() => {
+  useEffect(() => {
     async function getUsername() {
       const username = await getUserName(userToken);
       setUsername(username);
     }
+
     getUsername();
+  }, []);
 
+  useFocusEffect(() => {
     firstTimeOpenInitialization();
-  });
 
-  const { signOut } = useContext(AuthContext);
+    async function addFifoPendingsAndRewriteData() {
+      const hasPassed = await hasPassedAtLeastOneDay(today);
+      if (!hasPassed) return;
+
+      const data = await getData();
+
+      console.log("Adding pending values to fifo array and rewriting data");
+      await pushToFifoArray(data);
+      await pushUnhandledDays(data);
+      await setData();
+    }
+
+    addFifoPendingsAndRewriteData();
+  });
 
   const handleDevMode = () => {
     navigation.navigate("MDeveloperSettings");
@@ -57,11 +77,11 @@ const MMainPage = ({ navigation }) => {
 
       <MTextInput
         onChangeText={handleInputChange}
-        placeholder="value to upload"
+        placeholder="value to save"
       />
       <MButton
         type="primary"
-        text="Send"
+        text="Save"
         onPress={handleSaveValuesPress}
         disabled={isButtonDisabled}
       />

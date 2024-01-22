@@ -2,26 +2,32 @@ import React, { useContext, useEffect, useState } from "react";
 import { View, Text, Button } from "react-native";
 import MButton from "./MButton";
 import moment from "moment";
-import { AuthContext } from "../logic/authentication/authContext";
 import { handleResetToFirstTimeOpen } from "../logic/utils";
 import {
   getDataDeveloper,
   getFifoArrayDeveloper,
 } from "../logic/utils/developer";
+import { getToday } from "../logic/dates/dates";
+import { useFocusEffect } from "@react-navigation/native";
+import { AuthContext } from "../logic/authentication/authContext";
 
 const MDeveloperSettings = ({ navigation }) => {
   const [data, setData] = useState(null);
   const [fifoArray, setFifoArray] = useState(null);
+  const [todayDev, setTodayDev] = useState(moment());
+
   const { today, updateToday } = useContext(AuthContext);
 
-  const handleMinusOneDay = () => {
+  const handleMinusOneDay = async () => {
     const yesterday = moment(today).subtract(1, "days");
     updateToday(yesterday);
+    setTodayDev(yesterday);
   };
 
-  const handlePlusOneDay = () => {
+  const handlePlusOneDay = async () => {
     const tomorrow = moment(today).add(1, "days");
     updateToday(tomorrow);
+    setTodayDev(tomorrow);
   };
 
   const handleGoBack = () => {

@@ -1,13 +1,15 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { getToday } from "../dates/dates";
 
-export const postGoogleSheets = async (momentDate, value, accessToken) => {
+export const postGoogleSheets = async (value, accessToken) => {
   if (!accessToken) {
     console.error("No access token found");
     return;
   }
 
-  const formattedDate = momentDate.format("YYYY-MM-DD");
+  const today = await getToday();
+  const formattedDate = today.format("YYYY-MM-DD");
   let data = { majorDimension: "ROWS", values: [[formattedDate, value]] };
 
   let config = {

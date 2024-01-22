@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getToday, setToday } from "../dates/dates";
 
 export function useAuthContext(state, dispatch, promptAsync) {
   return useMemo(
@@ -10,8 +11,8 @@ export function useAuthContext(state, dispatch, promptAsync) {
       signOut: async () => {
         await signOutLogic(dispatch);
       },
-      updateToday: (today) => {
-        dispatch({ type: "UPDATE_TODAY", today: today });
+      updateToday: async (today) => {
+        await updateTodayLogic(dispatch, today);
       },
       userToken: state.userToken,
       today: state.today,
@@ -44,4 +45,10 @@ async function signOutLogic(dispatch) {
   console.log("Sign Out triggered");
   await AsyncStorage.removeItem("@accessToken");
   dispatch({ type: "SIGN_OUT" });
+}
+
+async function updateTodayLogic(dispatch, today) {
+  console.log("update today triggered");
+  await setToday(today);
+  dispatch({ type: "UPDATE_TODAY", today: today });
 }

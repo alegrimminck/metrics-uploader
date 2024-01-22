@@ -1,4 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { todayDataTemplate } from "../templates/defaultMetrics";
+import moment from "moment";
 
 export const getData = async () => {
   try {
@@ -13,6 +15,25 @@ export const getData = async () => {
   }
 };
 
+export const getDataDay = async () => {
+  const data = await getData();
+  return moment(data.date);
+};
+
+export const setData = async () => {
+  console.log("Setting data!");
+  const template = await todayDataTemplate();
+  await AsyncStorage.setItem("data", JSON.stringify(template));
+};
+
+export const updateDataMetric = async (metricValue) => {
+  const data = await getData();
+  await AsyncStorage.setItem(
+    "data",
+    JSON.stringify({ ...data, chatarra: metricValue })
+  );
+};
+
 export const getFifoArray = async () => {
   try {
     const fifoArray = await AsyncStorage.getItem("fifoArray");
@@ -24,6 +45,10 @@ export const getFifoArray = async () => {
     console.log(e);
     throw new Error("getFifoArray: Error in getFifoArray()");
   }
+};
+
+export const setFifoArray = async (fifoArray) => {
+  await AsyncStorage.setItem("fifoArray", JSON.stringify(fifoArray));
 };
 
 export const handleResetToFirstTimeOpen = async () => {

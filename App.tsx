@@ -4,7 +4,6 @@ import { useEffect, useMemo, useReducer, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MLogin from "./components/MLogin";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "./logic/authentication/authContext";
 import * as Google from "expo-auth-session/providers/google";
 import { reducer } from "./logic/globalState/reducer";
@@ -12,7 +11,8 @@ import { useAuthContext } from "./logic/hooks/useAuth";
 import { useRestoreUserIfSavedToken } from "./logic/hooks/useRestoreUserIfSavedToken";
 import { useHandleGoogleSignInResponse } from "./logic/hooks/useHandleGoogleSignInResponse";
 import MDeveloperSettings from "./components/MDeveloperSettings";
-import { getToday } from "./logic/dates/dates";
+import { getPossiblyFirstTimeToday } from "./logic/dates/dates";
+import moment from "moment";
 
 const Stack = createNativeStackNavigator();
 
@@ -24,7 +24,7 @@ export default function App() {
     isLoading: true,
     isSignout: false,
     userToken: null,
-    today: getToday(),
+    today: moment().subtract(20, "days"),
   });
 
   const [request, response, promptAsync] = Google.useAuthRequest({
@@ -35,6 +35,15 @@ export default function App() {
   const authContext = useAuthContext(state, dispatch, promptAsync);
   useHandleGoogleSignInResponse(dispatch, response);
   useRestoreUserIfSavedToken(dispatch, state);
+
+  useEffect(() => {
+    async function getToday() {
+      const today = await getPossiblyFirstTimeToday();
+      dispatch({ type: "UPDATE_TODAY", today: today });
+    }
+
+    getToday();
+  }, []);
 
   if (state.isLoading) {
     return (

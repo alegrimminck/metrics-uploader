@@ -2,6 +2,7 @@ import moment from "moment";
 import { getFifoArray, setFifoArray } from ".";
 import { getToday } from "../dates/dates";
 import { todayDataTemplate } from "../templates/defaultMetrics";
+import { postGoogleSheets } from "../requests/postGoogleSheets";
 
 export const pushToFifoArray = async (data) => {
   const fifoArray = await getFifoArray();
@@ -26,5 +27,27 @@ export const pushUnhandledDays = async (data) => {
 
       await pushToFifoArray(data);
     }
+  }
+};
+
+export const sendFifoArray = async (token, updateFifo) => {
+  const fifoArray = await getFifoArray();
+
+  if (fifoArray.length === 0) {
+    throw new Error("fifoArray: Fifo array is empty");
+  }
+
+  const sendableData = [];
+  fifoArray.forEach((data) => {
+    const formattedDate = moment(data.date).format("YYYY-MM-DD");
+    sendableData.unshift([formattedDate, data.chatarra]);
+  });
+
+  const response = await postGoogleSheets(sendableData, token);
+  if (response === "success") {
+    await updateFifo([]);
+    return "success";
+  } else {
+    return response;
   }
 };

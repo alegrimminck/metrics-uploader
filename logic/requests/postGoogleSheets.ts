@@ -2,15 +2,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { getToday } from "../dates/dates";
 
-export const postGoogleSheets = async (value, accessToken) => {
+export const postGoogleSheets = async (array, accessToken) => {
   if (!accessToken) {
     console.error("No access token found");
     return;
   }
 
   const today = await getToday();
-  const formattedDate = today.format("YYYY-MM-DD");
-  let data = { majorDimension: "ROWS", values: [[formattedDate, value]] };
+  let data = { majorDimension: "ROWS", values: [...array] };
 
   let config = {
     method: "post",
@@ -23,14 +22,14 @@ export const postGoogleSheets = async (value, accessToken) => {
     data: JSON.stringify(data),
   };
 
-  axios
-    .request(config)
-    .then((response) => {
-      console.log(JSON.stringify(response.data));
-    })
-    .catch((error) => {
-      console.log(error);
-      console.log(error.response.status);
-      console.log(error.response.data);
-    });
+  try {
+    const response = await axios.request(config);
+    console.log(JSON.stringify(response.data));
+    return "success";
+  } catch (error) {
+    if (error.response) {
+      return `Error: ${JSON.stringify(error.response.status)} - ${JSON.stringify(error.response.data)}`;
+    }
+    return "Error: An unexpected error occurred";
+  }
 };

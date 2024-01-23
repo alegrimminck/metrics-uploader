@@ -13,10 +13,9 @@ import { AuthContext } from "../logic/authentication/authContext";
 
 const MDeveloperSettings = ({ navigation }) => {
   const [data, setData] = useState(null);
-  const [fifoArray, setFifoArray] = useState(null);
   const [todayDev, setTodayDev] = useState(moment());
 
-  const { today, updateToday } = useContext(AuthContext);
+  const { today, updateToday, fifo, updateFifo } = useContext(AuthContext);
 
   const handleMinusOneDay = async () => {
     const yesterday = moment(today).subtract(1, "days");
@@ -35,7 +34,7 @@ const MDeveloperSettings = ({ navigation }) => {
   };
 
   const handleResetAll = async () => {
-    await handleResetToFirstTimeOpen();
+    await handleResetToFirstTimeOpen(updateFifo);
     await getDataPromise();
     await getFifoArrayPromise();
   };
@@ -47,7 +46,7 @@ const MDeveloperSettings = ({ navigation }) => {
 
   async function getFifoArrayPromise() {
     const fifoArray = await getFifoArrayDeveloper();
-    setFifoArray(fifoArray);
+    await updateFifo(fifoArray);
   }
 
   useEffect(() => {
@@ -70,7 +69,7 @@ const MDeveloperSettings = ({ navigation }) => {
 
       <View>
         <Text>Data is: {JSON.stringify(data)}</Text>
-        <Text>FifoArray is: {JSON.stringify(fifoArray)}</Text>
+        <Text>FifoArray is: {JSON.stringify(fifo)}</Text>
       </View>
       <View>
         <Button

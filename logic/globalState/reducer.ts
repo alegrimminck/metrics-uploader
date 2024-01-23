@@ -24,5 +24,10 @@ export function reducer(prevState, action) {
         ...prevState,
         today: action.today,
       };
+    case "UPDATE_FIFO":
+      return {
+        ...prevState,
+        fifo: action.fifo,
+      };
   }
 }

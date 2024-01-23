@@ -25,6 +25,7 @@ export default function App() {
     isSignout: false,
     userToken: null,
     today: moment().subtract(20, "days"),
+    fifo: [],
   });
 
   const [request, response, promptAsync] = Google.useAuthRequest({

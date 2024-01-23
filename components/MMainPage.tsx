@@ -9,15 +9,26 @@ import { getUserName } from "../logic/authentication/getUserInfo";
 import { firstTimeOpenInitialization } from "../logic/first_initialization/firstTimeOpenInitialization";
 import { useFocusEffect } from "@react-navigation/native";
 import { hasPassedAtLeastOneDay } from "../logic/dates/dates";
-import { pushToFifoArray, pushUnhandledDays } from "../logic/utils/fifoArray";
-import { getData, setData, updateDataMetric } from "../logic/utils";
+import {
+  pushToFifoArray,
+  pushUnhandledDays,
+  sendFifoArray,
+} from "../logic/utils/fifoArray";
+import {
+  getData,
+  getFifoArray,
+  setData,
+  updateDataMetric,
+} from "../logic/utils";
 import moment from "moment";
 
 const MMainPage = ({ navigation }) => {
   const [inputValue, setInputValue] = useState("");
   const [username, setUsername] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  const { userToken, signOut, today } = useContext(AuthContext);
+  const [sendedData, setSendedData] = useState("");
+  const { userToken, signOut, today, fifo, updateFifo } =
+    useContext(AuthContext);
 
   const handleInputChange = (text) => {
     setInputValue(text);
@@ -25,10 +36,18 @@ const MMainPage = ({ navigation }) => {
   };
 
   const handleSaveValuesPress = async () => {
-    // await postGoogleSheets(inputValue, userToken);
     updateDataMetric(inputValue);
     setInputValue("");
     setIsButtonDisabled(true);
+  };
+
+  const handleSendValuesPress = async () => {
+    const response = await sendFifoArray(userToken, updateFifo);
+    if (response === "success") {
+      setSendedData("SUCCESS");
+    } else {
+      setSendedData(response);
+    }
   };
 
   useEffect(() => {
@@ -40,21 +59,19 @@ const MMainPage = ({ navigation }) => {
     getUsername();
   }, []);
 
+  async function addFifoPendingsAndRewriteData() {
+    const hasPassed = await hasPassedAtLeastOneDay(today);
+    if (!hasPassed) return;
+
+    const data = await getData();
+
+    await pushToFifoArray(data);
+    await pushUnhandledDays(data);
+    await setData();
+  }
+
   useFocusEffect(() => {
     firstTimeOpenInitialization();
-
-    async function addFifoPendingsAndRewriteData() {
-      const hasPassed = await hasPassedAtLeastOneDay(today);
-      if (!hasPassed) return;
-
-      const data = await getData();
-
-      console.log("Adding pending values to fifo array and rewriting data");
-      await pushToFifoArray(data);
-      await pushUnhandledDays(data);
-      await setData();
-    }
-
     addFifoPendingsAndRewriteData();
   });
 
@@ -85,6 +102,29 @@ const MMainPage = ({ navigation }) => {
         onPress={handleSaveValuesPress}
         disabled={isButtonDisabled}
       />
+
+      <MButton
+        type="primary"
+        text="Send"
+        onPress={handleSendValuesPress}
+        disabled={fifo.length === 0}
+      />
+      {sendedData && (
+        <View>
+          <Text style={styles.description}>{sendedData}</Text>
+          <MButton
+            type="primary"
+            text="Close"
+            onPress={() => setSendedData("")}
+          />
+        </View>
+      )}
+      {fifo.length !== 0 && (
+        <Text style={styles.description}>
+          You can send these values:{"\n"}
+          {JSON.stringify(fifo)}
+        </Text>
+      )}
 
       <View style={styles.developmentWrapper}>
         <View style={styles.buttonRow}>

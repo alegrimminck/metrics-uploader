@@ -51,11 +51,12 @@ export const setFifoArray = async (fifoArray) => {
   await AsyncStorage.setItem("fifoArray", JSON.stringify(fifoArray));
 };
 
-export const handleResetToFirstTimeOpen = async () => {
+export const handleResetToFirstTimeOpen = async (updateFifo) => {
   try {
     await AsyncStorage.removeItem("firstTimeOpen");
     await AsyncStorage.removeItem("data");
     await AsyncStorage.removeItem("fifoArray");
+    updateFifo([]);
     console.log("data removed");
   } catch {
     throw new Error(

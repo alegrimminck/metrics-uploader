@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getToday, setToday } from "../dates/dates";
+import { setFifoArray } from "../utils";
 
 export function useAuthContext(state, dispatch, promptAsync) {
   return useMemo(
@@ -14,10 +15,14 @@ export function useAuthContext(state, dispatch, promptAsync) {
       updateToday: async (today) => {
         await updateTodayLogic(dispatch, today);
       },
+      updateFifo: async (fifo) => {
+        await updateFifoLogic(dispatch, fifo);
+      },
+      fifo: state.fifo,
       userToken: state.userToken,
       today: state.today,
     }),
-    [state.userToken, state.today, dispatch, promptAsync]
+    [state.userToken, state.today, state.fifo, dispatch, promptAsync]
   );
 }
 
@@ -51,4 +56,10 @@ async function updateTodayLogic(dispatch, today) {
   console.log("update today triggered");
   await setToday(today);
   dispatch({ type: "UPDATE_TODAY", today: today });
+}
+
+async function updateFifoLogic(dispatch, fifo) {
+  console.log("update today triggered");
+  await setFifoArray(fifo);
+  dispatch({ type: "UPDATE_FIFO", fifo: fifo });
 }
